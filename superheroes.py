@@ -148,15 +148,62 @@ class Arena(object):
             self.team_two.heroes.append(self.create_hero)
     def team_battle(self):
         self.team_one.attack(self.team_two)
+    def show_stats(self):
+        team_one_kills = 0
+        team_one_deaths = 0
+        team_two_kills = 0
+        team_two_deaths = 0
+        if(len(self.team_two.heroes) == 0):
+            print("Team "+self.team_one.name+" wins!")
+            print("Survivors: ")
+        for hero in self.team_one.heroes:
+            print(hero.name)
+            team_one_kills += hero.kills
+            team_one_deaths += hero.deaths
+        for hero in self.team_one.dead:
+            team_one_kills += hero.kills
+            team_one_deaths += hero.deaths
+        else:
+            print("Team "+self.team_two.name+" wins!")
+            print("Survivors: ")
+        for hero in self.team_two.heroes:
+            print(hero.name)
+            team_two_kills += hero.kills
+            team_two_deaths += hero.deaths
+        for hero in self.team_two.dead:
+            team_two_kills += hero.kills
+            team_two_deaths += hero.deaths
+
+        avgOne = team_one_kills
+        if team_one_deaths > 0:
+            avgOne = avgOne//team_one_deaths
+
+        avgTwo = team_two_kills
+        if self.team_two.total_deaths > 0:
+            avgTwo = avgTwo//team_two_deaths    
+        print("The average K/D ratio of team 1 is: "+avgOne)
+        print("The average K/D ratio of team 2 is: "+avgTwo)
 if __name__ == "__main__":
-    hero1 = Hero("Wonder Woman")
-    hero2 = Hero("Dumbledore")
-    ability1 = Ability("Super Speed", 300)
-    ability2 = Ability("Super Eyes", 130)
-    ability3 = Ability("Wizard Wand", 80)
-    ability4 = Ability("Wizard Beard", 20)
-    hero1.add_ability(ability1)
-    hero1.add_ability(ability2)
-    hero2.add_ability(ability3)
-    hero2.add_ability(ability4)
-    hero1.fight(hero2)
+    game_is_running = True
+
+    # Instantiate Game Arena
+    arena = Arena()
+
+    #Build Teams
+    arena.build_team_one()
+    arena.build_team_two()
+
+    while game_is_running:
+
+        arena.team_battle()
+        arena.show_stats()
+        play_again = input("Play Again? Y or N: ")
+
+        #Check for Player Input
+        if play_again.lower() == "n":
+            game_is_running = False
+
+        else:
+            #Revive heroes to play again
+            arena.team_one.revive_heroes()
+            arena.team_two.revive_heroes()
