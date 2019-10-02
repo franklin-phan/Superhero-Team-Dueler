@@ -99,13 +99,13 @@ class Team(object):
         self.heroes.append(hero)
     def attack(self, other_team):
         random.shuffle(self.heroes)
-        random.shuffle(other_team.heroes[0])
-        if self.heroes[0].current_health <= 0:
+        random.shuffle(other_team.heroes)
+        if not self.heroes[0].is_alive():
             self.dead.append(self.heroes.pop(0))
-        elif other_team.heroes[0].current_health <= 0:
+        elif not other_team.heroes[0].is_alive():
             other_team.dead.append(other_team.heroes.pop(0))
     def revive_heroes(self, health=100):
-        for death in range(len(self.dead)):
+        for _ in range(len(self.dead)):
             self.dead[0].current_health = self.dead[0].starting_health
             self.heroes.append(self.dead[0])
             self.dead.remove(self.dead[0])
@@ -119,33 +119,37 @@ class Arena(object):
         self.team_two = None
     def create_ability(self):
         name = input("Add an ability: ")
-        damage = input("Add a damage value for the ability: ")
+        damage = int(input("Add a damage value for the ability: "))
         return Ability(name,damage)
     def create_weapon(self):
         name = input("Add a weapon: ")
-        damage = input("Add a damage value for the weapon: ")
+        damage = int(input("Add a damage value for the weapon: "))
         return Weapon(name,damage)
     def create_armor(self):
         name = input("Add an armor: ")
-        block = input("Add a block value: ")
+        block = int(input("Add a block value: "))
         return Armor(name,block)
     def create_hero(self):
         name = input("Create a hero's name:")
-        health = input("Add a health value for the hero: ")
+        health = int(input("Add a health value for the hero: "))
+        ability = self.create_ability()
+        weapon = self.create_weapon()
         new_hero = Hero(name,health)
+        new_hero.add_ability(ability)
+        new_hero.add_weapon(weapon)
         return new_hero
     def build_team_one(self):
         name = input("Name team 1: ")
         self.team_one = Team(name)
-        team_members = input("Add a number of team members: ")
-        for team_member in range(team_members):
-            self.team_one.heroes.append(self.create_hero)
+        team_members = int(input("Add a number of team members: "))
+        for _ in range(team_members):
+            self.team_one.heroes.append(self.create_hero())
     def build_team_two(self):
         name = input("Name team 2: ")
         self.team_two = Team(name)
-        team_members = input("Add a number of team members: ")
-        for team_member in range(team_members):
-            self.team_two.heroes.append(self.create_hero)
+        team_members = int(input("Add a number of team members: "))
+        for _ in range(team_members):
+            self.team_two.heroes.append(self.create_hero())
     def team_battle(self):
         self.team_one.attack(self.team_two)
     def show_stats(self):
@@ -181,8 +185,8 @@ class Arena(object):
         avgTwo = team_two_kills
         if self.team_two.total_deaths > 0:
             avgTwo = avgTwo//team_two_deaths    
-        print("The average K/D ratio of team 1 is: "+avgOne)
-        print("The average K/D ratio of team 2 is: "+avgTwo)
+        print("The average K/D ratio of team 1 is: "+str(avgOne))
+        print("The average K/D ratio of team 2 is: "+str(avgTwo))
 if __name__ == "__main__":
     game_is_running = True
 
